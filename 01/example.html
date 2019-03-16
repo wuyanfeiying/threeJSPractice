@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>场景练习-随机生成小方块</title>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
+    <script src="./node_modules/three/three.js"></script>
+    <script>
+        $(function () {
+                var scene = new THREE.Scene(); //场景对象
+
+                //透视照相机（视角,长宽比例，近距点，原距点）
+                var camera = new THREE.PerspectiveCamera(
+                    50,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+
+                //照相机位置设置
+                camera.position.x = -30;
+                camera.position.y = 40;
+                camera.position.z = 30;
+
+                //照相机需要看哪里
+                camera.lookAt(scene.position);
+
+                //绘制对象（此处选用的是webGL）
+                var renderer = new THREE.WebGLRenderer();
+                renderer.setClearColor(new THREE.Color(0xefefef, 1.0)); //绘制时的颜色
+                renderer.setSize(window.innerWidth, window.innerHeight); //绘制宽高
+                renderer.shadowMapEnabled = true; //绘制时是否显示阴影
+
+                //舞台（平面）
+                var planGeometry = new THREE.PlaneGeometry(70, 50, 1, 1); //平面几何对象
+                var planeMeterail = new THREE.MeshLambertMaterial({color: 0xCCCCCC}); //平面材质
+                var plane = new THREE.Mesh(planGeometry, planeMeterail); //生成平面
+
+                plane.rotation.x = -.5 * Math.PI; //旋转   
+                plane.position.x = 0; //位置   
+                plane.position.y = 0; //位置     
+                plane.position.z = 0; //位置     
+
+                //将平面加入到场景中
+                scene.add(plane);
+
+                //添加环境光，并加入到场景中
+                var ambientLight = new THREE.AmbientLight(0x0c0c0c);
+                scene.add(ambientLight);
+
+                //设置光源（此处是聚光，点光源）
+                var spotLight = new THREE.SpotLight(0xFFFFFF);
+                spotLight.position.x = -40;
+                spotLight.position.y = 60;
+                spotLight.position.z = -10;
+                scene.add(spotLight);
+
+                document.body.appendChild(renderer.domElement); //添加到视图中
+                
+
+                // 添加一个立方体       
+                  function addCube(params) {
+                    var cubeGeometry = new THREE.BoxGeometry(5,5,5);// 创建立方体几何
+                    var cubeMaterial = new THREE.MeshLambertMaterial({color:0xCCCFFF});// 创建立方体材质
+                    var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);// 构成立方体对象
+
+                    // 随机生成立方体
+                    cube.position.x = -30 + Math.round(Math.random()*planGeometry.parameters.width);
+                    cube.position.y = Math.round(Math.random()*5);
+                    cube.position.z = -20 + Math.round(Math.random()*planGeometry.parameters.height);
+
+                    // 添加到场景中
+                    scene.add(cube);
+                }
+
+                render();
+                //渲染页面
+                function render() {
+                    addCube();
+                    renderer.render(scene, camera);
+                    //加入循环
+                    requestAnimationFrame(render);
+                }
+            }
+
+        )
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
